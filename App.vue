@@ -19,16 +19,10 @@
         <= </button>
     </div>
 
-    <!-- <button class="operandKeys" v-on:click="calculate('+')">+</button>
-    <button class="operandKeys" v-on:click="calculate('-')"> - </button>
-    <button class="operandKeys" v-on:click="calculate('*')"> * </button>
-    <button class="operandKeys" v-on:click="calculate('/')"> / </button>
-    <button class="operandKeys" v-on:click="calculate('%')"> % </button>
-    <button class="operandKeys" v-on:click="calculate('X')"> Xn </button> -->
-
     <div>
-      <button class="operandKeys" v-for="operand in operands" v-bind:key="operand" v-on:click="calculate(operand)"> {{
-      operand }}</button>
+      <button class="operandKeys" v-for="operand in operands" v-bind:key="operand" v-on:click="currentOperand=operand">
+        {{
+        operand }}</button>
     </div>
 
   </div>
@@ -41,8 +35,8 @@ export default {
     return {
       operand1: '0',
       operand2: '0',
-      operands: ['+', '-', '*', '/', '%', 'X'],
-      currentOperand: "+",
+      operands: ['+', '-', '*', '/', '%', '@'],
+      currentOperand: '+',
       currentEnter: 1,
       keyboardOn: false,
     }
@@ -50,44 +44,38 @@ export default {
 
   methods: {
     add() {
-      this.result = this.operand1 + this.operand2
+      return Number(this.operand1) + Number(this.operand2)
     },
     substract() {
-      this.result = this.operand1 - this.operand2
+      return this.operand1 - this.operand2
     },
     multiply() {
-      this.result = this.operand1 * this.operand2
+      return this.operand1 * this.operand2
     },
     divide() {
-      this.result = this.operand1 / this.operand2
+      return this.operand1 / this.operand2
     },
     withoutRemainder() {
-      this.result = Math.trunc(this.operand1 / this.operand2)
+      return Math.trunc(this.operand1 / this.operand2)
     },
     exponent() {
-      this.result = Math.pow(operand1, operand2)
+      return Math.pow(this.operand1, this.operand2)
     },
 
     calculate(operation) {
       switch (operation) {
-        case '+':
-          this.add()
-          break;
-        case '-':
-          this.substract()
-          break;
-        case '*':
-          this.multiply()
-          break;
-        case '/':
-          this.divide()
-          break;
-        case '%':
-          this.withoutRemainder()
-          break;
-        case 'X':
-          this.exponent()
-          break;
+        case "+":
+          return this.add()
+        case "-":
+          return this.substract()
+        case "*":
+          return this.multiply()
+        case "/":
+          return this.divide()
+        case "%":
+          return this.withoutRemainder()
+        case "@":
+          return this.exponent()
       }
     },
 
@@ -119,7 +107,7 @@ export default {
 
   computed: {
     result() {
-      return this.result = this.calculate(this.currentOperand)
+      return this.calculate(this.currentOperand)
       // return this.result = Number(this.operand1) + Number(this.operand2)
     }
   },
@@ -144,7 +132,7 @@ input {
   margin-bottom: 20px;
   width: 40px;
   height: 40px;
-  background-color: black;
+  background-color: rgb(75, 75, 75);
   color: white;
   font-size: 14px;
   font-weight: 800;
