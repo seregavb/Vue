@@ -7,5 +7,3 @@ new Vue({
   render: function (h) { return h(App) },
 }).$mount('#app')
 
-console.log(operand1)
-console.log(operand2)

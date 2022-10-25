@@ -1,17 +1,35 @@
 <template>
   <div id="app">
     <h2>Калькулятор</h2>
-    <input type="number" v-model="operand1" />
-    <input type="number" v-model="operand2" />
+    <input type="number" v-bind:class="{focus: currentEnter == 1}" v-on:click="checkOperand(1)" v-model="operand1" />
+    <input type="number" v-bind:class="{focus: currentEnter == 2}" v-on:click="checkOperand(2)" v-model="operand2" />
+    =
+    <input v-model="result" type="number" class="result" />
+    <br>
 
-    <p>Результат: {{ result }} </p>
+    <br>
+    <label> <input type="checkbox" v-on:click="keyboard" v-bind:checked="keyboardOn" />Показать клавиатуру</label>
+    <br>
+    <br>
 
-    <button v-on:click="result = Number(operand1) + Number(operand2)">+</button>
-    <button v-on:click="result = operand1 - operand2"> - </button>
-    <button v-on:click="result = operand1 * operand2"> * </button>
-    <button v-on:click="result = operand1 / operand2"> / </button>
-    <button v-on:click="result = Math.trunc(operand1 / operand2)"> % </button>
-    <button v-on:click="result = Math.pow(operand1, operand2)"> В степень </button>
+    <div v-if="keyboardOn">
+      <button class="keyboard" v-for="num of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]" v-bind:key="num"
+        v-on:click="keyPush(num)">{{num}}</button>
+      <button class="keyboard" v-on:click="backspace">
+        <= </button>
+    </div>
+
+    <!-- <button class="operandKeys" v-on:click="calculate('+')">+</button>
+    <button class="operandKeys" v-on:click="calculate('-')"> - </button>
+    <button class="operandKeys" v-on:click="calculate('*')"> * </button>
+    <button class="operandKeys" v-on:click="calculate('/')"> / </button>
+    <button class="operandKeys" v-on:click="calculate('%')"> % </button>
+    <button class="operandKeys" v-on:click="calculate('X')"> Xn </button> -->
+
+    <div>
+      <button class="operandKeys" v-for="operand in operands" v-bind:key="operand" v-on:click="calculate(operand)"> {{
+      operand }}</button>
+    </div>
 
   </div>
 </template>
@@ -21,27 +39,133 @@ export default {
   name: 'App',
   data() {
     return {
-      operand1: '',
-      operand2: '',
-      result: '',
+      operand1: '0',
+      operand2: '0',
+      operands: ['+', '-', '*', '/', '%', 'X'],
+      currentOperand: "+",
+      currentEnter: 1,
+      keyboardOn: false,
     }
-  }
+  },
+
+  methods: {
+    add() {
+      this.result = this.operand1 + this.operand2
+    },
+    substract() {
+      this.result = this.operand1 - this.operand2
+    },
+    multiply() {
+      this.result = this.operand1 * this.operand2
+    },
+    divide() {
+      this.result = this.operand1 / this.operand2
+    },
+    withoutRemainder() {
+      this.result = Math.trunc(this.operand1 / this.operand2)
+    },
+    exponent() {
+      this.result = Math.pow(operand1, operand2)
+    },
+
+    calculate(operation) {
+      switch (operation) {
+        case '+':
+          this.add()
+          break;
+        case '-':
+          this.substract()
+          break;
+        case '*':
+          this.multiply()
+          break;
+        case '/':
+          this.divide()
+          break;
+        case '%':
+          this.withoutRemainder()
+          break;
+        case 'X':
+          this.exponent()
+          break;
+      }
+    },
+
+    keyboard() {
+      this.keyboardOn = !this.keyboardOn
+    },
+    keyPush(num) {
+      if (this.currentEnter == 1) {
+        this.operand1 = this.operand1 == 0 ? '' : this.operand1
+        this.operand1 = String(this.operand1) + String(num)
+      } else if (this.currentEnter == 2) {
+        this.operand2 = this.operand2 == 0 ? '' : this.operand2
+        this.operand2 = String(this.operand2) + String(num)
+      }
+    },
+    backspace() {
+      if (this.currentEnter == 1) {
+        this.operand1 = this.operand1.slice(0, -1)
+        this.operand1 = this.operand1 == '' ? '0' : this.operand1
+      } else if (this.currentEnter == 2) {
+        this.operand2 = this.operand2.slice(0, -1)
+        this.operand2 = this.operand2 == '' ? '0' : this.operand2
+      }
+    },
+    checkOperand(numberOperand) {
+      this.currentEnter = numberOperand
+    },
+  },
+
+  computed: {
+    result() {
+      return this.result = this.calculate(this.currentOperand)
+      // return this.result = Number(this.operand1) + Number(this.operand2)
+    }
+  },
+
 }
 </script>
+
+
 
 <style lang="scss">
 input {
   padding-left: 10px;
-  border-color: rgb(0, 61, 32);
+  border-color: rgb(175, 175, 175);
   border-radius: 10px;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 20px;
   background-color: rgb(250, 250, 227);
-  text-decoration: none;
 }
 
-button {
-  margin: 10px;
+.operandKeys {
+  margin-right: 8px;
+  margin-bottom: 20px;
+  width: 40px;
+  height: 40px;
+  background-color: black;
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: 10px;
+}
 
+.result {
+  background-color: rgb(221, 216, 169);
+}
+
+.keyboard {
+  background-color: rgb(206, 206, 206);
+  color: black;
+  margin-right: 4px;
+  margin-bottom: 20px;
+  padding: 6px 10px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.focus {
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5)
 }
 </style>
